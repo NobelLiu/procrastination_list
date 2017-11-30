@@ -16,7 +16,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-    background-color: #E9EEF3;
+  background-color: #E9EEF3;
   flex: 1;
   display: flex;
 }
