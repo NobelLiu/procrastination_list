@@ -1,16 +1,27 @@
 <template>
   <div class="container">
-    <div class="header">
+    <div class="header" @click="overview" :style="showOverview ? headerOverflowStyle : headerNormalStyle">
       <span class="title">拖延症的列表</span>
     </div>
-    <div class="list">
-      <transition-group name="list-complete" tag="p">
-        <div class="cell" v-for="(item, index) in items" :key="index">
+    <div class="list" :style="showOverview ? listOverflowStyle : listNormalStyle">
+      <transition-group name="list-complete" tag="div">
+        <div class="cell" v-for="(item, index) in items" :key="index" @click="showAction(index)">
           <div class="content">
             <span class="title">{{ item.title }}</span>
           </div>
-          <div class="action">
-            <span v-if="item.completed">Click again to mark finished</span>
+          <div class="action" :style="index == expandIndex ? actionShownStyle : actionNormalStyle">
+            <md-button class="md-icon-button">
+              <md-icon>drag_handle</md-icon>
+            </md-button>
+            <md-button class="md-icon-button">
+              <md-icon>edit</md-icon>
+            </md-button>
+            <md-button class="md-icon-button">
+              <md-icon>delete</md-icon>
+            </md-button>
+            <md-button class="md-icon-button">
+              <md-icon>{{ item.completed ? 'clear' : 'done' }}</md-icon>
+            </md-button>
           </div>
         </div>
       </transition-group>
@@ -27,7 +38,7 @@
       :md-active.sync="active"
       v-model="value"
       md-title="添加"
-      md-input-maxlength="30"
+      md-input-maxlength="100"
       md-input-placeholder="填写内容"
       md-confirm-text="添加"
       md-cancel-text="取消"
@@ -51,7 +62,41 @@ export default {
       menuVisible: false,
       active: false,
       value: '',
-      showSnackbar: false
+      showSnackbar: false,
+      showOverview: false,
+      listNormalStyle: {
+        'box-shadow': 'none',
+        'border-radius': '0px',
+        margin: '0',
+        overflow: 'auto'
+      },
+      listOverflowStyle: {
+        'box-shadow': '0px 0px 8px rgba(180, 198, 215, 0.75)',
+        'border-radius': '5px',
+        margin: '0 50px 30px 50px',
+        overflow: 'hidden'
+      },
+      headerNormalStyle: {
+        height: '60px',
+        'box-shadow': '0px 5px 8px rgba(180, 198, 215, 0.5)',
+        margin: 0,
+        'border-radius': 0
+      },
+      headerOverflowStyle: {
+        height: '40px',
+        'box-shadow': '0px 0px 8px rgba(180, 198, 215, 0.75)',
+        margin: '30px 50px 30px 50px',
+        'border-radius': '20px'
+      },
+      actionNormalStyle: {
+        height: '0px',
+        opacity: 0
+      },
+      actionShownStyle: {
+        height: '50px',
+        opacity: 1
+      },
+      expandIndex: -1
     }
   },
   computed: {
@@ -80,10 +125,20 @@ export default {
     },
     onSnackBarCancel: function () {
       this.showSnackbar = false
+    },
+    overview: function () {
+      this.showOverview = !this.showOverview
+    },
+    showAction: function (index) {
+      if (index === this.expandIndex) {
+        this.expandIndex = -1
+      } else {
+        this.expandIndex = index
+      }
     }
   },
   mounted: function () {
-    for (var i = 0; i < 0; i++) {
+    for (var i = 0; i < 50; i++) {
       this.items.push({title: Math.random() * 1000, completed: Math.random() > 0.5})
     }
   }
@@ -100,13 +155,12 @@ export default {
 }
 
 .header {
-  height: 60px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0px 2px 4px rgba(180, 198, 215, 0.5);
   justify-content: center;
   align-items: center;
   z-index: 0;
+  transition: all .5s ease;
 }
 
 .title {
@@ -115,36 +169,37 @@ export default {
 
 .list {
   flex: 1;
-  overflow: auto;
-  box-shadow: 0px 0px 8px rgba(180, 198, 215, 0.5);
-  border-radius: 5px;
-  margin: 50px;
-  transition: all .5s ease;
+  transition: all .35s ease;
 }
 
 .add {
   margin: 15px;
   background: white;
+  transition: all .35s ease;
 }
 
 .cell {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   background: white;
   margin: 8px;
   border-radius: 5px;
 }
 
 .cell .content {
-  flex: 1;
   padding: 15px;
 }
 
 .cell .action {
-  width: 50px;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
+  overflow: hidden;
+  transition: all .35s ease;
+}
+
+.md-icon-button {
+  color: #b4c6d7;
 }
 
 h1, h2 {
