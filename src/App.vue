@@ -26,4 +26,7 @@ html, body {
   flex: 1;
   height: 100%;
 }
+input:focus, textarea:focus {
+  outline: none;
+}
 </style>
